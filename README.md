@@ -1,93 +1,67 @@
-# FloGen
-FloGen generates randomized order and customer data for testing ML applications. For example, if you want to generate millions of dummy records to test your machine learning implementations, you can use FloGen to generate a configurable amount of random data to consume.
+# Incubation
+## Realistic Synthetic Data for ML Testing
 
-Number of unique customer IDs, SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized. The customer records associated to them will also be random.
+`"built to break ML systems before users do"`
 
-The parameters can be configured and the output is serialized to a local CSV or JSON file. 
+Incubation is a high-throughput synthetic data generator designed to stress-test machine learning pipelines, recommenders, and clustering models across *any* ML framework.
+It produces large volumes of randomized — but statistically *structured* — customer and order records that mimic real-world dataset behavior, including long-tail SKU popularity, user segments, seasonality, missing values, and outliers.
 
-#### Example input:
-- **Number of random orders to generate**
-  - OrdersToGenerate = 50000
-  
-- **Generate random SKUs using these characters**
-  - CharactersToUse = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }
-  
-- **Maximum number of unique customer IDs to spread across all generated orders**
-  - MaximumNumberOfCustomers = 8000
-  
-- **Maximum length of the SKU to use when generating cart orders**
-  - MaximumLengthOfSku = 4
+**What gets generated**
+- Millions of **order events** (for matrix factorization, recommenders, behavioral analysis)
+- Matching **customer records** (for churn prediction, segmentation, and clustering)
+- Coherent telecom-style usage fields, basket variance, and probabilistic churn labels
+- Non-uniform distributions so models learn *real signal*, not uniform noise
 
-- **Maximum quantity for each SKU in the generated cart orders**
-  - MaximumSkuQuantity = 6
+**What stays stable**
+- No assumptions about ONNX, pickle, Torch, or other model formats
+- Core generation engine emits **opaque artifacts + standardized metadata**
 
-- **Maximum quantity of cart items in the generated cart orders**
-  - MaximumCartItemQuantity = 4
-  
-- **Number of variable quantities for each SKU across all orders**
-  - MaximumSkuQuantityVariance = 6
-    - *Each SKU will have, at most, this number of unique quantities across every cart item it's present in*
+**Configurable randomness**
+Customer IDs, SKU pools, basket size, SKU quantities, recency, support interactions, and churn likelihood are all generated using reproducible shuffles (Fisher-Yates), Poisson/lognormal sampling, weighted selection, and noise injection.
 
-- **The characters to choose from when generating random email prefixes**
-  - AvailableCharsForRandomEmailPrefixes = "abcdefghijklmnopqrstuvwxyz0123456789";
+**Output formats**
+- CSV or JSON written to local disk, blob storage, or any external sink
+- P.I.I. columns (e.g.: emails, names) can be excluded at export time without altering internal state
+- Built for easy dataset versioning, validation, and plugin-based model evaluation
 
-- **The strings to choose from when generating random email suffixes**
-  - AvailableStringsForRandomEmailSuffixes = ["@yahoo.ru", "@hotmail.co.uk", "@gmail.com", "@monarchy.gov"]
+Incubation helps you test ML implementations under realistic conditions *before deploying to real users*, making it ideal for portfolios, benchmarks, and system hardening.
 
-#### Output:
-50,000 orders across 8,000 unique customers
 
-*RandomOrders-2020-03-19-13-51-16.csv* (2.9 MB)
-![RandomOrders CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-orders.png)
+## Updates
 
-*RandomCustomers-2020-03-19-13-51-16.csv* (1.2 MB)
-![RandomCustomers CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-customers.png)
+---
+### Additions
+	- Non-uniform sampling
+	- Latent person segments
+	- Long-tail SKU weighting
+	- Noise + outliers + nulls
+	- Feature correlations
+	- Probabilistic churn
+	- Simple to integrate with existing ML pipelines
 
-*Example JSON output:*
-Generation time: ~72 milliseconds (0.072s)
-````JSON
-{
-  "orders": [
-    {
-      "customerId": 2268,
-      "cart": [
-        {
-          "sku": "72",
-          "quantity": 1
-        },
-        {
-          "sku": "70",
-          "quantity": 4
-        }
-      ],
-      "orderDate": "2011-06-27T00:00:00"
-    },
-    {
-      "customerId": 956,
-      "cart": [
-        {
-          "sku": "96",
-          "quantity": 3
-        },
-        {
-          "sku": "6",
-          "quantity": 4
-        }
-      ],
-      "orderDate": "2019-07-27T00:00:00"
-    },
-    {
-      "customerId": 7777,
-      "cart": [
-        {
-          "sku": "66",
-          "quantity": 2
-        }
-      ],
-      "orderDate": "2009-10-02T00:00:00"
-    },
-    { "..." }
-  ]
-}
-````
+---
 
+### Replacements
+	- Fisher-Yates replaced with RandEx
+	- (Poisson & Gaussian distributing) 
+	- Better performance on large datasets
+
+---
+
+### Examples
+
+Default Configuration (`Debug`)
+```
+/out/customers_20260103_012620.csv		0.5 MB
+/out/orders_20260103_012620.csv			0.5 MB
+```
+Generated 10,000 transactions and 5,809 customers in **0.80s**
+
+---
+
+Compiled Modified Configuration (`Release`)
+```
+/out/customers_20260103_014157.csv		9.2 MB	
+/out/orders_20260103_014157.csv"		16  MB
+```
+Generated 300,000 transactions and 87,799 customers in **19.78s**

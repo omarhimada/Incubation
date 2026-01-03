@@ -1,85 +1,85 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.ML.Data;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace FloGen.Models
-{
-    /// <summary>
-    /// Based on kaggle 'telecom customer' model
-    /// </summary>
-    public class Customer
-    {
-        [JsonProperty("customerId")]
-        public int CustomerId { get; set; }
+namespace Incubation.Models {
+    public class Customer {
+        [LoadColumn(0)]
+        public float CustomerId { get; set; }
 
-        [JsonProperty("email")]
-        public string Email { get; set; }
+        [LoadColumn(1)]
+        public string? Email { get; set; }
 
-        [JsonProperty("churned")]
+        [LoadColumn(2)]
+        public string? PhoneNumber { get; set; }
+
+        // Label
+        [LoadColumn(3)]
         public bool Churned { get; set; }
 
-        [JsonProperty("state")]
-        public string State { get; set; }
+        [LoadColumn(4)]
+        public string? State { get; set; }
 
-        /// <summary>
-        /// AKA Tenure
-        /// </summary>
-        [JsonProperty("accountLength")]
+        [LoadColumn(5)]
+        public string? AreaCode { get; set; }
+
+        [LoadColumn(6)]
         public float AccountLength { get; set; }
 
-        [JsonProperty("daysSinceLastPurchase")]
+        [LoadColumn(7)]
         public float DaysSinceLastPurchase { get; set; }
 
-        [JsonProperty("areaCode")]
-        public string AreaCode { get; set; }
-
-        [JsonProperty("phoneNumber")]
-        public string PhoneNumber { get; set; }
-
-        [JsonProperty("internationalPlan")]
-        public bool InternationalPlan { get; set; }
-
-        [JsonProperty("voice")]
-        public bool Voice { get; set; }
-
-        [JsonProperty("numberOfMessages")]
+        [LoadColumn(8)]
         public float NumberOfMessages { get; set; }
 
-        [JsonProperty("totalDaytimeMinutes")]
+        [LoadColumn(9)]
         public float TotalDaytimeMinutes { get; set; }
 
-        [JsonProperty("totalDaytimeCalls")]
+        [LoadColumn(10)]
         public float TotalDaytimeCalls { get; set; }
 
-        [JsonProperty("totalDaytimeCharges")]
+        [LoadColumn(11)]
         public float TotalDaytimeCharges { get; set; }
 
-        [JsonProperty("totalEveningMinutes")]
+        [LoadColumn(12)]
         public float TotalEveningMinutes { get; set; }
 
-        [JsonProperty("totalEveningCalls")]
+        [LoadColumn(13)]
         public float TotalEveningCalls { get; set; }
 
-        [JsonProperty("totalEveningCharges")]
+        [LoadColumn(14)]
         public float TotalEveningCharges { get; set; }
 
-        [JsonProperty("totalNightMinutes")]
+        [LoadColumn(15)]
         public float TotalNightMinutes { get; set; }
 
-        [JsonProperty("totalNightCalls")]
+        [LoadColumn(16)]
         public float TotalNightCalls { get; set; }
 
-        [JsonProperty("totalNightCharges")]
+        [LoadColumn(17)]
         public float TotalNightCharges { get; set; }
 
-        [JsonProperty("totalInternationalMinutes")]
+        [LoadColumn(18)]
         public float TotalInternationalMinutes { get; set; }
 
-        [JsonProperty("totalInternationalCalls")]
+        [LoadColumn(19)]
         public float TotalInternationalCalls { get; set; }
 
-        [JsonProperty("totalInternationalCharges")]
+        [LoadColumn(20)]
         public float TotalInternationalCharges { get; set; }
 
-        [JsonProperty("numberOfCustomerServiceCalls")]
+        [LoadColumn(21)]
         public float NumberOfCustomerServiceCalls { get; set; }
+
+        [LoadColumn(22)]
+        public bool InternationalPlan { get; set; }
+
+        [LoadColumn(23)]
+        public bool Voice { get; set; }
+    }
+
+    public class ManyRandomCustomers {
+        public List<Customer> Customers { get; set; } = new();
     }
 }

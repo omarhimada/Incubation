@@ -1,10 +1,5 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/FloGen/bin
-/FloGen/.vs
-/FloGen/obj
-/FloGen/*.user
-.DS_Store
+﻿/bin
 /.vs
+/obj
+/*.user
+.DS_Store

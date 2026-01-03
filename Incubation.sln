@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloGen", "FloGen.csproj", "{B0275B74-0DB7-E37D-C459-3CB9F1FB9D37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Incubation", "Incubation.csproj", "{B0275B74-0DB7-E37D-C459-3CB9F1FB9D37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
