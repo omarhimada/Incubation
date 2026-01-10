@@ -37,8 +37,25 @@ public sealed class Incubate {
     /// </summary>
     internal const int MaxDaysBack = 365 * 4;
 
-    internal List<string>? _zipfSku;
+    internal List<int>? _zipfSku;
     internal double[]? _zipfWeights;
+
+    internal const string _ca = "CA";
+    internal const string _tx = "TX";
+    internal const string _il = "IL";
+    internal const string _fl = "FL";
+    internal const string _ny = "NY";
+    internal const string _pa = "PA";
+    internal const string _oh = "OH";
+    internal const string _ga = "GA";
+    internal const string _nc = "NC";
+    internal const string _mi = "MI";
+    internal const string _wa = "WA";
+    internal const string _az = "AZ";
+    internal const string _ma = "MA";
+    internal const string _va = "VA";
+    internal const string _nj = "NJ";
+    internal const string _other = "OTHER";
 
     private async Task OutputData(ManyRandomTransactions transactions, ManyRandomCustomers customers) {
         await _trainingDataStorage.WriteNewRandomOrdersCsvAsync(transactions);
@@ -59,7 +76,7 @@ public sealed class Incubate {
     }
 
     /// <summary>
-    /// Returns a random Boolean value, where the probability of returning true is specified by the given parameter.
+    /// Returns a random Boolean RandomCustomersHeaderRow, where the probability of returning true is specified by the given parameter.
     /// </summary>
     /// <param name="probability">The probability of returning <see langword="true"/>. Must be between 0.0 and 1.0, inclusive. The default is 0.5.</param>
     /// <returns><see langword="true"/> with the specified probability; otherwise, <see langword="false"/>.</returns>
@@ -84,7 +101,7 @@ public sealed class Incubate {
     /// distribution biased toward more recent dates. Otherwise, it selects a date from the full available history. This
     /// is useful for generating test data that more closely resembles real-world usage patterns, where recent dates are
     /// more common.</remarks>
-    /// <returns>A <see cref="DateTime"/> value representing a randomly selected date in the past. The date is more likely to be
+    /// <returns>A <see cref="DateTime"/> RandomCustomersHeaderRow representing a randomly selected date in the past. The date is more likely to be
     /// within the last 90 days, but may be any date up to the maximum allowed history.</returns>
     private DateTime RandomDateTimeRecentBiased() {
         DateTime today = DateTime.Today;
@@ -101,21 +118,27 @@ public sealed class Incubate {
     }
 
     /// <summary>
-    /// Calculates the cluster index for the specified SKU string.
+    /// Maps a SKU identifier to a cluster index, distributing SKUs evenly across available clusters.
     /// </summary>
-    /// <remarks>The returned cluster index is determined by hashing the SKU string and mapping it to a value
-    /// in the range [0, SkuClusters). This method ensures that the same SKU will always map to the same cluster
-    /// index.</remarks>
-    /// <param name="sku">The SKU identifier to map to a cluster. Cannot be null.</param>
-    /// <returns>An integer representing the cluster index corresponding to the specified SKU.</returns>
-    private int SkuToCluster(string sku) {
+    /// <remarks>This method uses a bit-mixing algorithm to reduce sequential mapping of SKUs to clusters,
+    /// helping to avoid clustering bias and improve distribution. The mapping is deterministic for a given SKU and
+    /// number of clusters.</remarks>
+    /// <param name="sku">The SKU identifier to be assigned to a cluster. Must be a non-negative integer.</param>
+    /// <returns>An integer representing the cluster index to which the specified SKU is assigned. The RandomCustomersHeaderRow ranges from 0 to
+    /// SkuClusters - 1.</returns>
+    private int SkuToCluster(int sku) {
+        // Mix bits (similar spirit to hashing) to avoid "sequential SKU => sequential clusters".
         unchecked {
-            int h = 17;
-            for (int i = 0; i < sku.Length; i++) {
-                h = (h * 31) + sku[i];
-            }
-            h = Math.Abs(h);
-            return h % SkuClusters;
+            uint x = (uint)sku;
+
+            // A solid 32-bit mix (inspired by Murmur3 finalizer)
+            x ^= x >> 16;
+            x *= 0x85ebca6bu;
+            x ^= x >> 13;
+            x *= 0xc2b2ae35u;
+            x ^= x >> 16;
+
+            return (int)(x % (uint)SkuClusters);
         }
     }
 
@@ -127,13 +150,13 @@ public sealed class Incubate {
     /// distribution, which is commonly used to model real-world item frequency distributions. The input list is
     /// shuffled to ensure that the most popular SKUs are not always the same across runs.</remarks>
     /// <param name="allSku">The complete list of SKU identifiers to be assigned Zipf-distributed popularity weights. Cannot be null.</param>
-    private void BuildZipfSkus(List<string> allSku) {
+    private void BuildZipfSkus(List<int> allSku) {
         int n = allSku.Count;
         double s = 1.07;
 
         // Shuffle once so “popular” isn’t always the same prefix
-        var shuffled = allSku.OrderBy(_ => _random.Next()).ToList();
-        var weights = new double[n];
+        List<int> shuffled = allSku.OrderBy(_ => _random.Next()).ToList();
+        double[] weights = new double[n];
 
         for (int i = 0; i < n; i++) {
             int rank = i + 1;
@@ -158,12 +181,12 @@ public sealed class Incubate {
         Dictionary<int, Person> people = new(capacity: MaximumNumberOfCustomers);
 
         for (int id = StartCustomersAt; id < StartCustomersAt + MaximumNumberOfCustomers; id++) {
-            PersonSegment seg = _random.WeightedChoice(new (PersonSegment, double)[] {
+            PersonSegment seg = _random.WeightedChoice([
                 (PersonSegment.Steady,     0.50),
                 (PersonSegment.DealSeeker, 0.20),
                 (PersonSegment.HighValue,  0.15),
                 (PersonSegment.AtRisk,     0.15)
-            });
+            ]);
 
             double baseLambda = seg switch {
                 PersonSegment.HighValue => _random.NextLogNormal(mu: 2.2, sigma: 0.4),
@@ -235,20 +258,24 @@ public sealed class Incubate {
     /// configured data volume.</remarks>
     /// <returns>A task that represents the asynchronous data generation operation.</returns>
     public async Task GenerateData() {
+        const string _generating = "Generating synthetic customer and transaction data...";
+        Console.WriteLine(_generating);
+
         Stopwatch sw = Stopwatch.StartNew();
 
-        // Build SKUs (000..99 for MaximumLengthOfSku=2)
-        // If you want “010” etc, increase MaximumLengthOfSku.
-        List<string> allSku =
-            [.. Enumerable.Range(1, MaximumLengthOfSku)
-                .SelectMany(count => PartialCombinatorial.CartesianProduct(CharactersToUse, count))
-                .Select(chars => new string(chars))];
+        // Generate all possible integer SKUs
+        int total = 0;
+        for (int len = 1; len <= MaximumLengthOfSku; len++) {
+            total += (int)Math.Pow(DigitsToUse.Length, len);
+        }
+        // Skip SKU 0, start at 1
+        List<int> allSku = Enumerable.Range(1, total).ToList();
 
         BuildZipfSkus(allSku);
         Dictionary<int, Person> people = BuildPeople();
 
-        var customerIds = people.Keys.ToArray();
-        var customerWeights = customerIds.Select(id => people[id].BaseOrderLambda).ToArray();
+        int[] customerIds = people.Keys.ToArray();
+        double[] customerWeights = customerIds.Select(id => people[id].BaseOrderLambda).ToArray();
 
         // Transactions
         ManyRandomTransactions manyOrders = new();
@@ -269,15 +296,15 @@ public sealed class Incubate {
             int items = _random.NextPoisson(person.BasketMean * season);
             items = Math.Clamp(items, 1, MaximumCartItemQuantity);
 
-            List<Product> cartItems = new(items);
+            List<Order> cartItems = new(items);
 
             for (int k = 0; k < items; k++) {
                 // Sample a few candidates and pick the one that best matches preference.
-                string bestSku = _zipfSku![_random.WeightedIndex(_zipfWeights!)];
+                int bestSku = _zipfSku![_random.WeightedIndex(_zipfWeights!)];
                 double bestScore = double.NegativeInfinity;
 
                 for (int tries = 0; tries < 3; tries++) {
-                    string sku = _zipfSku![_random.WeightedIndex(_zipfWeights!)];
+                    int sku = _zipfSku![_random.WeightedIndex(_zipfWeights!)];
                     int cluster = SkuToCluster(sku);
                     double prefBoost = (cluster == person.PreferredSkuCluster) ? 0.8 : 0.0;
                     double score = prefBoost + _random.NextGaussian(0, 0.25);
@@ -288,7 +315,7 @@ public sealed class Incubate {
                 double qMean = (2.0 / person.PriceSensitivity)._clamp(0.8, 3.0);
                 int qty = Math.Clamp(1 + _random.NextPoisson(qMean), 1, MaximumSkuQuantity);
 
-                cartItems.Add(new Product { Sku = bestSku, Quantity = qty });
+                cartItems.Add(new Order { Sku = bestSku, Quantity = qty });
             }
 
             manyOrders.Transactions.Add(new Transaction {
@@ -320,12 +347,12 @@ public sealed class Incubate {
             customer.AreaCode = areaCode;
             customer.PhoneNumber = _random.Chance(0.01) ? null : phoneNumber;
 
-            customer.State = _random.WeightedChoice(new (string, double)[] {
-                ("CA", 0.13), ("TX", 0.09), ("FL", 0.07), ("NY", 0.06), ("PA", 0.04),
-                ("IL", 0.04), ("OH", 0.04), ("GA", 0.03), ("NC", 0.03), ("MI", 0.03),
-                ("WA", 0.025), ("AZ", 0.02), ("MA", 0.02), ("VA", 0.02), ("NJ", 0.02),
-                ("OTHER", 0.405)
-            });
+            customer.State = _random.WeightedChoice([
+                (_ca, 0.13), (_tx, 0.09), (_fl, 0.07), (_ny, 0.06), (_pa, 0.04),
+                (_il, 0.04), (_oh, 0.04), (_ga, 0.03), (_nc, 0.03), (_mi, 0.03),
+                (_wa, 0.025), (_az, 0.02), (_ma, 0.02), (_va, 0.02), (_nj, 0.02),
+                (_other, 0.405)
+            ]);
 
             customer.Voice = person.Segment switch {
                 PersonSegment.AtRisk => RandomBoolean(0.70),
@@ -440,15 +467,21 @@ public sealed class Incubate {
             }
         }
 
+        // Complete generation
         ManyRandomCustomers randomCustomes= new() { Customers = customers };
 
         sw.Stop();
-        await OutputData(manyOrders, randomCustomes);
-
+        
         Console.WriteLine($"Generated {OrdersToGenerate:N0} transactions and {customers.Count:N0} customers in {sw.Elapsed.TotalSeconds:N2}s");
+        
+        sw.Restart();
+
+        // Write to CSV
+        await OutputData(manyOrders, randomCustomes);
+        
+        Console.WriteLine($"Wrting to CSV took {sw.Elapsed.TotalSeconds:N2}s");
     }
 }
-
 
 public static class Program {
     public static async Task Main(string[] args) {

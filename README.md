@@ -26,8 +26,27 @@ Customer IDs, SKU pools, basket size, SKU quantities, recency, support interacti
 
 Incubation helps you test ML implementations under realistic conditions *before deploying to real users*, making it ideal for portfolios, benchmarks, and system hardening.
 
+## Recent Updates
+- Changed SKU from string to integer. 
+- Removed cartesian product 
+```
+// Replacement
+int total = (int)Math.Pow(10, Configuration.MaximumLengthOfSku) - 1;
+List<int> allSku = Enumerable.Range(1, total).ToList();
+```
+- Added `RecencyDays` field to orders for temporal analysis.
+- Added optional `QuantitySignal` and `RecencyWeightFromDays` methods if you're using the `random-orders` output to run Matrix Factorization. You can combine them in an estimator chain.
 
-## Updates
+
+- Replaced SKU clustering with a surprising LLM-assisted optimization:
+```
+// 32-bit MurmurHash3 finalizer
+x ^= x >> 16;
+x *= 0x85ebca6bu;
+x ^= x >> 13;
+x *= 0xc2b2ae35u;
+x ^= x >> 16;
+```
 
 ---
 ### Additions
@@ -38,14 +57,12 @@ Incubation helps you test ML implementations under realistic conditions *before 
 	- Feature correlations
 	- Probabilistic churn
 	- Simple to integrate with existing ML pipelines
-
 ---
 
 ### Replacements
 	- Fisher-Yates replaced with RandEx
 	- (Poisson & Gaussian distributing) 
 	- Better performance on large datasets
-
 ---
 
 ### Examples

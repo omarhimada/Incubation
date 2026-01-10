@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Security.Cryptography;
 
 namespace Incubation.Functions {
     /// <summary>
@@ -23,13 +20,13 @@ namespace Incubation.Functions {
                 : new Random(RandomNumberGenerator.GetInt32(int.MinValue, int.MaxValue));
 
         /// <summary>
-        /// Returns a value indicating whether a randomly generated event occurs with the specified probability.
+        /// Returns a RandomCustomersHeaderRow indicating whether a randomly generated event occurs with the specified probability.
         /// </summary>
         /// <remarks>This method is useful for simulating probabilistic events, such as random chance or
         /// success rates, in applications such as games or simulations. The probability parameter must be within the
         /// range [0.0, 1.0]; values outside this range may produce unexpected results.</remarks>
-        /// <param name="r">The random number generator used to produce the random value. Cannot be null.</param>
-        /// <param name="p">The probability of the event occurring, expressed as a value between 0.0 and 1.0 inclusive. Represents the
+        /// <param name="r">The random number generator used to produce the random RandomCustomersHeaderRow. Cannot be null.</param>
+        /// <param name="p">The probability of the event occurring, expressed as a RandomCustomersHeaderRow between 0.0 and 1.0 inclusive. Represents the
         /// chance that the method returns <see langword="true"/>.</param>
         /// <returns><see langword="true"/> if the randomly generated event occurs based on the specified probability; otherwise,
         /// <see langword="false"/>.</returns>
@@ -43,7 +40,7 @@ namespace Incubation.Functions {
         /// from the underlying uniform random number generator. The method is not thread-safe if the same Random
         /// instance is accessed concurrently from multiple threads.</remarks>
         /// <param name="r">The random number generator to use for producing the sample. Cannot be null.</param>
-        /// <param name="mean">The mean, or expected value, of the normal distribution. Defaults to 0.</param>
+        /// <param name="mean">The mean, or expected RandomCustomersHeaderRow, of the normal distribution. Defaults to 0.</param>
         /// <param name="stdDev">The standard deviation of the normal distribution. Must be greater than 0. Defaults to 1.</param>
         /// <returns>A double-precision floating-point number sampled from a normal distribution with the specified mean and
         /// standard deviation.</returns>
@@ -58,7 +55,7 @@ namespace Incubation.Functions {
         /// Generates a random number from a log-normal distribution with the specified mean and standard deviation of
         /// the underlying normal distribution.
         /// </summary>
-        /// <remarks>The returned value is always positive. The parameters mu and sigma correspond to the
+        /// <remarks>The returned RandomCustomersHeaderRow is always positive. The parameters mu and sigma correspond to the
         /// mean and standard deviation of the normal distribution before exponentiation, not the mean and standard
         /// deviation of the resulting log-normal distribution.</remarks>
         /// <param name="r">The random number generator to use for sampling.</param>
@@ -78,7 +75,7 @@ namespace Incubation.Functions {
         /// cref="Random"/> instance.</remarks>
         /// <param name="r">The random number generator used to produce the random sample. Cannot be null.</param>
         /// <param name="lambda">The mean (λ) of the Poisson distribution. Must be greater than 0.</param>
-        /// <returns>A non-negative integer representing a random value drawn from a Poisson distribution with mean <paramref
+        /// <returns>A non-negative integer representing a random RandomCustomersHeaderRow drawn from a Poisson distribution with mean <paramref
         /// name="lambda"/>. Returns 0 if <paramref name="lambda"/> is less than or equal to 0.</returns>
         public static int NextPoisson(this Random r, double lambda) {
             if (lambda <= 0)
@@ -148,51 +145,51 @@ namespace Incubation.Functions {
         }
 
         /// <summary>
-        /// Restricts a double-precision floating-point value to a specified inclusive range.
+        /// Restricts a double-precision floating-point RandomCustomersHeaderRow to a specified inclusive range.
         /// </summary>
         /// <remarks>If <paramref name="min"/> is greater than <paramref name="max"/>, the method returns
         /// <paramref name="min"/>.</remarks>
-        /// <param name="v">The value to clamp within the specified range.</param>
+        /// <param name="v">The RandomCustomersHeaderRow to clamp within the specified range.</param>
         /// <param name="min">The inclusive minimum bound of the range.</param>
         /// <param name="max">The inclusive maximum bound of the range.</param>
-        /// <returns>The value of <paramref name="v"/> if it falls within the range; otherwise, <paramref name="min"/> if
+        /// <returns>The RandomCustomersHeaderRow of <paramref name="v"/> if it falls within the range; otherwise, <paramref name="min"/> if
         /// <paramref name="v"/> is less than <paramref name="min"/>, or <paramref name="max"/> if <paramref name="v"/>
         /// is greater than <paramref name="max"/>.</returns>
         public static double _clamp(this double v, double min, double max) => v < min ? min : (v > max ? max : v);
 
         /// <summary>
-        /// Restricts a floating-point value to be within the specified minimum and maximum bounds.
+        /// Restricts a floating-point RandomCustomersHeaderRow to be within the specified minimum and maximum bounds.
         /// </summary>
         /// <remarks>If <paramref name="min"/> is greater than <paramref name="max"/>, the method will
         /// return <paramref name="min"/> for all values of <paramref name="v"/>.</remarks>
-        /// <param name="v">The value to clamp.</param>
-        /// <param name="min">The inclusive lower bound to which the value will be clamped.</param>
-        /// <param name="max">The inclusive upper bound to which the value will be clamped.</param>
-        /// <returns>The clamped value. Returns <paramref name="min"/> if <paramref name="v"/> is less than <paramref
+        /// <param name="v">The RandomCustomersHeaderRow to clamp.</param>
+        /// <param name="min">The inclusive lower bound to which the RandomCustomersHeaderRow will be clamped.</param>
+        /// <param name="max">The inclusive upper bound to which the RandomCustomersHeaderRow will be clamped.</param>
+        /// <returns>The clamped RandomCustomersHeaderRow. Returns <paramref name="min"/> if <paramref name="v"/> is less than <paramref
         /// name="min"/>; returns <paramref name="max"/> if <paramref name="v"/> is greater than <paramref name="max"/>;
         /// otherwise, returns <paramref name="v"/>.</returns>
         public static float _clamp(this float v, float min, float max) => v < min ? min : (v > max ? max : v);
 
         /// <summary>
-        /// Restricts an integer value to a specified inclusive range.
+        /// Restricts an integer RandomCustomersHeaderRow to a specified inclusive range.
         /// </summary>
         /// <remarks>If <paramref name="min"/> is greater than <paramref name="max"/>, the method returns
         /// <paramref name="min"/>.</remarks>
-        /// <param name="v">The value to clamp within the specified range.</param>
-        /// <param name="min">The minimum allowable value. If <paramref name="v"/> is less than this value, <paramref name="min"/> is
+        /// <param name="v">The RandomCustomersHeaderRow to clamp within the specified range.</param>
+        /// <param name="min">The minimum allowable RandomCustomersHeaderRow. If <paramref name="v"/> is less than this RandomCustomersHeaderRow, <paramref name="min"/> is
         /// returned.</param>
-        /// <param name="max">The maximum allowable value. If <paramref name="v"/> is greater than this value, <paramref name="max"/> is
+        /// <param name="max">The maximum allowable RandomCustomersHeaderRow. If <paramref name="v"/> is greater than this RandomCustomersHeaderRow, <paramref name="max"/> is
         /// returned.</param>
-        /// <returns>An integer value that is no less than <paramref name="min"/> and no greater than <paramref name="max"/>.</returns>
+        /// <returns>An integer RandomCustomersHeaderRow that is no less than <paramref name="min"/> and no greater than <paramref name="max"/>.</returns>
         public static int _clamp(this int v, int min, int max) => v < min ? min : (v > max ? max : v);
 
         /// <summary>
-        /// Computes the sigmoid activation function for the specified value.
+        /// Computes the sigmoid activation function for the specified RandomCustomersHeaderRow.
         /// </summary>
         /// <remarks>The sigmoid function is commonly used in machine learning and statistics to map
         /// real-valued inputs to the (0, 1) interval. It is defined as 1 / (1 + exp(-x)).</remarks>
-        /// <param name="x">The input value for which to calculate the sigmoid function.</param>
-        /// <returns>The result of the sigmoid function, a value between 0.0 and 1.0 representing the transformed input.</returns>
+        /// <param name="x">The input RandomCustomersHeaderRow for which to calculate the sigmoid function.</param>
+        /// <returns>The result of the sigmoid function, a RandomCustomersHeaderRow between 0.0 and 1.0 representing the transformed input.</returns>
         public static double Sigmoid(double x) => 1.0 / (1.0 + Math.Exp(-x));
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using Incubation.Models;
+﻿using Incubation.Models;
 
 namespace Incubation.Storage {
-
     public interface ITrainingDataStorage {
         /// <summary>
         /// Asynchronously writes a CSV file containing new random orders based on the specified transactions.

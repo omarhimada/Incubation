@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Incubation.Models {
+﻿namespace Incubation.Models {
     internal enum PersonSegment {
         Steady,
         DealSeeker,
